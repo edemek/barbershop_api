@@ -19,5 +19,3 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('barbershops', BarbershopController::class);
 });
 
-
-gggg
