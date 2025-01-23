@@ -16,10 +16,13 @@ return new class extends Migration
             $table->string('name');
             $table->string('phone')->unique();
             $table->timestamp('phone_verified_at')->nullable();
+            $table->string('email')->nullable();
             $table->string('password');
+            $table->enum('role', ['coiffeur', 'client'])->default('coiffeur');
             $table->rememberToken();
             $table->timestamps();
         });
+        
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('phone')->primary();
