@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use Exception;
+use Exception ;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Validation\ValidatesRequests;
