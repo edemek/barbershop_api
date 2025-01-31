@@ -18,6 +18,18 @@ return new class extends Migration
         $table->integer('quantity');
         $table->timestamps();
     });
+    
+    /*
+    Schema::create('shopping_cart', function (Blueprint $table) {
+        $table->id();
+        $table->unsignedBigInteger('product_id'); // Doit correspondre au type de 'id' dans 'products'
+        $table->integer('quantity');
+        $table->timestamps();
+    
+        $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
+    });
+    */
+    
 }
 
 

@@ -15,6 +15,32 @@ class Salon extends Model
         'owner_id',
         'seats_available',
         'opening_hours',
+
+        'salon_level_id',
+        'address_id',
+        'description',
+        'phone_number',
+        'mobile_number',
+        'availability_range',
+        'available',
+        'featured',
+        'accepted'
+    ];
+
+    /**
+     * Validation rules
+     *
+     * @var array
+     */
+    public static array $rules = [
+        'name' => 'required|max:127',
+        // 'salon_level_id' => 'required|exists:salon_levels,id',
+        // 'address_id' => 'required|exists:addresses,id',
+        'address' => 'required|string',
+        'phone_number' => 'max:50',
+        // 'mobile_number' => 'max:50',
+        'seats_available' => 'required|numeric|max:9999999.99|min:0.01'
+        // 'availability_range' => 'required|numeric|max:9999999.99|min:0.01'
     ];
 
     protected $casts = [
