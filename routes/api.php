@@ -12,7 +12,9 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\OtpController;
-
+use App\Http\Controllers\Api\BookingAPIController;
+use App\Http\Controllers\API\SalonAPIController;
+use App\Http\Controllers\SalonController;
 
 //------------------- user -------------------
 Route::get('/user', function (Request $request) {
@@ -110,6 +112,19 @@ Route::get('/promotions', [PromotionController::class, 'index']); // Liste des p
 Route::post('/promotions', [PromotionController::class, 'store']); // Ajouter une promotion
 Route::get('/promotions/{promotion}', [PromotionController::class, 'show']); // Détails d'une promotion
 Route::delete('/promotions/{promotion}', [PromotionController::class, 'destroy']); // Supprimer une promotion
+
+
+//------------------- bookings -------------------
+Route::resource('bookings', BookingAPIController::class );
+
+
+//------------------- salons -------------------
+Route::resource('salons', SalonAPIController::class );
+
+// Route::get('/salons', [SalonController::class, 'index']); // Liste des avis
+// Route::post('/salons', [SalonController::class, 'store']); // Ajouter un avis
+// Route::get('/salons/{salon}', [SalonController::class, 'show']); // Détails d'un avis
+// Route::delete('/salons/{salon}', [SalonController::class, 'destroy']); // Supprimer un avis
 
 
 
