@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\EServiceAPIController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
@@ -26,7 +27,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('barbershops', BarbershopController::class);
 });
 
-
+//------------------- e-services -------------------
+Route::get('e_services', [EServiceAPIController::class, 'store']); // Creer un service
 
 //------------------- products -------------------
 Route::get('/products', [ProductController::class, 'index']); // Liste de tous les produits
