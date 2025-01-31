@@ -64,7 +64,7 @@ use Prettus\Repository\Exceptions\RepositoryException;
             $salons = $this->salonRepository->get();
             $this->filterCollection($request, $salons);
 
-            return $this->sendResponse($salons->toArray(), 'Salons retrieved successfully');
+            return $this->sendResponse($salons->toArray(),  __('lang.saved_successfully', ['operator' => __('lang.address')]));
         }
 
         /**
