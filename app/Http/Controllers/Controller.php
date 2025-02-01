@@ -36,10 +36,9 @@ abstract class Controller
     {
         $err = [ 
             "message" => $error,
-            "code"=> $code,
         ] ;
         
-        return response()->json($err);
+        return response()->json($err ,$code);
     }
 
     /**

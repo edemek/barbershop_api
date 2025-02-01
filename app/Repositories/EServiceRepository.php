@@ -1,18 +1,20 @@
 <?php
 /*
  * File name: EServiceRepository.php
- * Last modified: 2024.04.18 at 17:21:53
- * Author: SmarterVision - https://codecanyon.net/user/smartervision
- * Copyright (c) 2024
+ * Last modified: 2025.02.01 at 11:47:06
+ * Author: harrykouevi - https://github.com/harrykouevi
+ * Copyright (c) 2025
  */
 
 namespace App\Repositories;
 
 use App\Models\EService;
 use App\Traits\QueryToModel;
-// use InfyOm\Generator\Common\BaseRepository;
+use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Contracts\CacheableInterface;
+use Prettus\Repository\Contracts\RepositoryInterface;
 use Prettus\Repository\Traits\CacheableRepository;
+
 
 /**
  * Class EServiceRepository
@@ -23,7 +25,7 @@ use Prettus\Repository\Traits\CacheableRepository;
  * @method EService find($id, $columns = ['*'])
  * @method EService first($columns = ['*'])
  */
-class EServiceRepository  implements CacheableInterface
+class EServiceRepository extends BaseRepository implements RepositoryInterface ,CacheableInterface
 // extends BaseRepository
 
 {

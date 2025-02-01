@@ -1,9 +1,9 @@
 <?php
 /*
  * File name: EServiceAPIController.php
- * Last modified: 2024.04.18 at 17:22:51
- * Author: SmarterVision - https://codecanyon.net/user/smartervision
- * Copyright (c) 2024
+ * Last modified: 2025.02.01 at 11:22:50
+ * Author: harrykouevi - https://github.com/harrykouevi
+ * Copyright (c) 2025
  */
 
 namespace App\Http\Controllers\API;
@@ -16,6 +16,7 @@ use App\Repositories\UploadRepository;
 use App\Repositories\UserRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Validation\ValidationException;
 use Prettus\Repository\Exceptions\RepositoryException;
 
 /**
@@ -54,14 +55,17 @@ class EServiceAPIController extends Controller
         try {
             $input = $request->all();
             $eService = $this->eServiceRepository->create($input);
-            if (isset($input['image']) && $input['image'] && is_array($input['image'])) {
-                foreach ($input['image'] as $fileUuid) {
-                    $cacheUpload = $this->uploadRepository->getByUuid($fileUuid);
-                    $mediaItem = $cacheUpload->getMedia('image')->first();
-                    $mediaItem->copy($eService, 'image');
-                }
-            }
-        } catch (Exception $e) {
+            // if (isset($input['image']) && $input['image'] && is_array($input['image'])) {
+            //     foreach ($input['image'] as $fileUuid) {
+            //         $cacheUpload = $this->uploadRepository->getByUuid($fileUuid);
+            //         $mediaItem = $cacheUpload->getMedia('image')->first();
+            //         $mediaItem->copy($eService, 'image');
+            //     }
+            // }
+        }catch (ValidationException $e) {
+            // Return a custom JSON error response for validation errors
+            return $this->sendError($e->validator->errors(),422); // HTTP status code 422 Unprocessable Entity
+        }  catch (Exception $e) {
             return $this->sendError($e->getMessage());
         }
         return $this->sendResponse($eService->toArray(), __('lang.saved_successfully', ['operator' => __('lang.e_service')]));
@@ -86,18 +90,21 @@ class EServiceAPIController extends Controller
         try {
             $input = $request->all();
             $input['categories'] = $input['categories'] ?? [];
-            $eService = $this->eServiceRepository->update($input, $id);
+            $eService = $this->eServiceRepository->update($id , $input);
             if (isset($input['image']) && $input['image'] && is_array($input['image'])) {
                 if ($eService->hasMedia('image')) {
                     $eService->getMedia('image')->each->delete();
                 }
-                foreach ($input['image'] as $fileUuid) {
-                    $cacheUpload = $this->uploadRepository->getByUuid($fileUuid);
-                    $mediaItem = $cacheUpload->getMedia('image')->first();
-                    $mediaItem->copy($eService, 'image');
-                }
+                // foreach ($input['image'] as $fileUuid) {
+                //     $cacheUpload = $this->uploadRepository->getByUuid($fileUuid);
+                //     $mediaItem = $cacheUpload->getMedia('image')->first();
+                //     $mediaItem->copy($eService, 'image');
+                // }
             }
-        } catch (Exception $e) {
+        }catch (ValidationException $e) {
+            // Return a custom JSON error response for validation errors
+            return $this->sendError($e->validator->errors(),422); // HTTP status code 422 Unprocessable Entity
+        }  catch (Exception $e) {
             return $this->sendError($e->getMessage());
         }
 

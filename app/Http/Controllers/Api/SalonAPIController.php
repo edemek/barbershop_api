@@ -22,6 +22,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use InfyOm\Generator\Criteria\LimitOffsetCriteria;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Prettus\Repository\Exceptions\RepositoryException;
@@ -36,15 +37,15 @@ use Prettus\Repository\Exceptions\RepositoryException;
         private SalonRepository $salonRepository;
 
         /** @var UploadRepository */
-    //  private UploadRepository $uploadRepository;
+        //  private UploadRepository $uploadRepository;
 
-        public function __construct(SalonRepository $salonRepo
-    //  , UploadRepository $uploadRepository
+        public function __construct(
+            SalonRepository $salonRepo,
+            //  , UploadRepository $uploadRepository
         )
         {
             $this->salonRepository = $salonRepo;
-        //  $this->uploadRepository = $uploadRepository;
-        //  parent::__construct();
+            //  $this->uploadRepository = $uploadRepository;
         }
 
         /**
@@ -57,7 +58,7 @@ use Prettus\Repository\Exceptions\RepositoryException;
         public function index(Request $request): JsonResponse
         {
             try {
-            $this->salonRepository->pushCriteria(new NearCriteria($request));
+                $this->salonRepository->pushCriteria(new NearCriteria($request));
             } catch (RepositoryException $e) {
                 return $this->sendError($e->getMessage());
             }
@@ -135,6 +136,8 @@ use Prettus\Repository\Exceptions\RepositoryException;
                     //  $mediaItem->copy($salon, 'image');
                 }
             }
+        } catch (ValidationException $e) {
+            return $this->sendError(array_values($e->errors()));
         } catch (Exception $e) {
             return $this->sendError($e->getMessage());
         }
@@ -172,6 +175,8 @@ use Prettus\Repository\Exceptions\RepositoryException;
                     // $mediaItem->copy($salon, 'image');
                 }
             }
+        } catch (ValidationException $e) {
+            return $this->sendError(array_values($e->errors()));
         } catch (Exception $e) {
             return $this->sendError($e->getMessage());
         }

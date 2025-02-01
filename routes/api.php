@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\AvailabilityHourAPIController;
 use App\Http\Controllers\API\EServiceAPIController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -122,6 +123,13 @@ Route::resource('bookings', BookingAPIController::class );
 
 //------------------- salons -------------------
 Route::resource('salons', SalonAPIController::class );
+
+//------------------- availability_hours (ouverture du salon) -------------------
+Route::resource('availability_hours', AvailabilityHourAPIController::class)->only(['index', 'show']);
+Route::resource('availability_hours', AvailabilityHourAPIController::class)->only(['store', 'update', 'destroy']);
+
+
+
 
 // Route::get('/salons', [SalonController::class, 'index']); // Liste des avis
 // Route::post('/salons', [SalonController::class, 'store']); // Ajouter un avis

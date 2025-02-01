@@ -1,9 +1,9 @@
 <?php
 /*
  * File name: BookingAPIController.php
- * Last modified: 2024.04.10 at 13:21:42
- * Author: SmarterVision - https://codecanyon.net/user/smartervision
- * Copyright (c) 2024
+ * Last modified: 2025.02.01 at 11:22:50
+ * Author: harrykouevi - https://github.com/harrykouevi
+ * Copyright (c) 2025
  */
 
 namespace App\Http\Controllers\API;
@@ -15,6 +15,7 @@ use App\Events\BookingChangedEvent;
 use App\Events\BookingStatusChangedEvent;
 use App\Http\Controllers\Controller;
 use App\Models\Address;
+use App\Models\Booking;
 use App\Notifications\NewBooking;
 use App\Repositories\AddressRepository;
 use App\Repositories\BookingRepository;
@@ -34,6 +35,9 @@ use InfyOm\Generator\Criteria\LimitOffsetCriteria;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Prettus\Repository\Exceptions\RepositoryException;
 use Prettus\Validator\Exceptions\ValidatorException;
+use App\Criteria\Salons\NearCriteria;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class BookingController
@@ -89,23 +93,24 @@ class BookingAPIController extends Controller
     public function index(Request $request): JsonResponse
     {
         try {
-            $this->bookingRepository->queryCriteria(function (\Illuminate\Database\Eloquent\Builder $query) use ($request) {
-                // Exemple de filtrage : par ID d'utilisateur
-                if ($request->has('user_id')) {
-                    $query->where('user_id', $request->input('user_id'));
-                }
-                return $query ;
-            });
-            // $this->bookingRepository->pushCriteria(new RequestCriteria($request));
-            // $this->bookingRepository->pushCriteria(new BookingsOfUserCriteria(auth()->id()));
-            // $this->bookingRepository->pushCriteria(new LimitOffsetCriteria($request));
-        } catch (\Exception $e) {
+            // $this->bookingRepository->pushCriteria(new NearCriteria($request));
+            $this->bookingRepository->queryCriteria(function (Builder|Model $query) use ($request) {
+                    // Exemple de filtrage : par ID d'utilisateur
+                    if ($request->has('user_id')) {
+                        $query->where('user_id', $request->input('user_id'));
+                    }
+                    return $query ;
+                });
+        } catch (RepositoryException $e) {
             return $this->sendError($e->getMessage());
         }
-        $bookings = $this->bookingRepository->get();
-        $this->filterCollection($request, $bookings);
-        return $this->sendResponse($bookings->toArray(), 'Bookings retrieved successfully');
+       
+        $salons =  $this->bookingRepository->get();
+        $this->filterCollection($request, $salons);
+
+        return $this->sendResponse($salons->toArray(),  __('lang.saved_successfully', ['operator' => __('lang.address')]));
     }
+    
 
     /**
      * Display the specified Booking.
@@ -118,7 +123,13 @@ class BookingAPIController extends Controller
     public function show(int $id, Request $request): JsonResponse
     {
         try {
-            $this->bookingRepository->queryCriteria(function (\Illuminate\Database\Eloquent\Builder $query) use ($request) {});
+            $this->bookingRepository->queryCriteria(function (Builder|Model $query) use ($request) {
+                // Exemple de filtrage : par ID d'utilisateur
+                if ($request->has('user_id')) {
+                    $query->where('user_id', $request->input('user_id'));
+                }
+                return $query ;
+            });
         } catch (\Exception $e) {
             return $this->sendError($e->getMessage());
         }
@@ -128,7 +139,6 @@ class BookingAPIController extends Controller
         }
         $this->filterModel($request, $booking);
         return $this->sendResponse($booking->toArray(), 'Booking retrieved successfully');
-
 
     }
 
@@ -143,14 +153,18 @@ class BookingAPIController extends Controller
     public function store(Request $request): JsonResponse
     {
         try {
+            $request->validate(Booking::$rules);
+
             $input = $request->all();
             $salon = $this->salonRepository->find($input['salon_id']);
-            if (isset($input['address'])) {
+          
+            if ($request->has('address')) {
                 $this->validate($request, [
                     'address.address' => Address::$rules['address'],
                     'address.longitude' => Address::$rules['longitude'],
                     'address.latitude' => Address::$rules['latitude'],
                 ]);
+                
                 // $address = $this->addressRepository->updateOrCreate(['address' => $input['address']['address']], $input['address']);
                 // if (empty($address)) {
                 //     return $this->sendError(__('lang.not_found', ['operator', __('lang.address')]));
@@ -159,14 +173,15 @@ class BookingAPIController extends Controller
                 // }
             } else {
                 $input['address'] = $salon->address;
+
             }
-            if (isset($input['e_services'])) {
+            if ($request->has('e_services')) {
                 $input['e_services'] = $this->eServiceRepository->findWhereIn('id', $input['e_services']);
                 // coupon code 
             }
 
             // $taxes = $salon->taxes;
-            // $input['salon'] = $salon;
+            $input['salon'] = $salon;
             // $input['taxes'] = $taxes;
 
             // if (isset($input['options'])) {
@@ -175,11 +190,14 @@ class BookingAPIController extends Controller
             $input['booking_status_id'] = $this->bookingStatusRepository->find(1)->id;
 
             $booking = $this->bookingRepository->create($input);
-            Notification::send($salon->users, new NewBooking($booking));
+
+
+            if(!Empty($salon->users) ) Notification::send($salon->users, new NewBooking($booking));
 
         } catch (ValidationException $e) {
-            return $this->sendError(array_values($e->errors()));
-        } catch (ValidatorException|ModelNotFoundException|Exception $e) {
+            // Return a custom JSON error response for validation errors
+            return $this->sendError($e->validator->errors(),422); // HTTP status code 422 Unprocessable Entity
+        } catch (Exception $e) {
             return $this->sendError($e->getMessage());
         }
 
@@ -218,9 +236,10 @@ class BookingAPIController extends Controller
                 event(new BookingStatusChangedEvent($booking));
             }
 
-        } catch (ValidatorException $e) {
-            return $this->sendError($e->getMessage());
-        }
+        }catch (ValidationException $e) {
+            // Return a custom JSON error response for validation errors
+            return $this->sendError($e->validator->errors(),422); // HTTP status code 422 Unprocessable Entity
+        } 
 
         return $this->sendResponse($booking->toArray(), __('lang.saved_successfully', ['operator' => __('lang.booking')]));
     }

@@ -13,6 +13,7 @@ use App\Models\Booking;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Config;
 
 class NewBooking extends Notification
 {
@@ -42,8 +43,10 @@ class NewBooking extends Notification
      */
     public function via(mixed $notifiable): array
     {
+        
+        $value = Config::get('gnittes.enable_email_notifications');
         $types = ['database'];
-        if (setting('enable_email_notifications', false)) {
+        if ($value) {
             $types[] = 'mail';
         }
         return $types;

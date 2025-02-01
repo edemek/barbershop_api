@@ -575,7 +575,7 @@ if (!function_exists('setting')) {
     function setting($key, $default = null)
     {
         // Load settings from the private file
-        $settings = require storage_path('app/ginttes.php');
+        //$settings = require storage_path('app/ginttes.php');
 
         return  config('gnittes.' . $key, $default);;
     }

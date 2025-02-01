@@ -1,17 +1,20 @@
 <?php
 /*
  * File name: BookingRepository.php
- * Last modified: 2024.04.18 at 17:21:52
- * Author: SmarterVision - https://codecanyon.net/user/smartervision
- * Copyright (c) 2024
+ * Last modified: 2025.02.01 at 11:47:06
+ * Author: harrykouevi - https://github.com/harrykouevi
+ * Copyright (c) 2025
  */
 
 namespace App\Repositories;
 
 use App\Models\Booking;
 use App\Traits\QueryToModel;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\Eloquent\Builder ; 
-// use InfyOm\Generator\Common\BaseRepository;
+use Prettus\Repository\Eloquent\BaseRepository;
+use Prettus\Repository\Contracts\RepositoryInterface;
+
 
 /**
  * Class BookingRepository
@@ -22,18 +25,10 @@ use Illuminate\Database\Eloquent\Builder ;
  * @method Booking find($id, $columns = ['*'])
  * @method Booking first($columns = ['*'])
  */
-class BookingRepository 
-//extends BaseRepository
+class BookingRepository  extends BaseRepository implements RepositoryInterface
 {
     use QueryToModel ;
     
-    protected Builder $query; // Propriété pour stocker la requête
-
-    public function __construct()
-    {
-        $this->query = Booking::query(); // Initialiser la requête ici
-    }
-
     
     /**
      * @var array

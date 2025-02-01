@@ -1,15 +1,16 @@
 <?php
 /*
  * File name: BookingStatusRepository.php
- * Last modified: 2024.04.18 at 17:22:51
- * Author: SmarterVision - https://codecanyon.net/user/smartervision
- * Copyright (c) 2024
+ * Last modified: 2025.02.01 at 11:47:06
+ * Author: harrykouevi - https://github.com/harrykouevi
+ * Copyright (c) 2025
  */
 
 namespace App\Repositories;
 
 use App\Models\BookingStatus;
-// use InfyOm\Generator\Common\BaseRepository;
+use Prettus\Repository\Eloquent\BaseRepository;
+
 
 /**
  * Class BookingStatusRepository
@@ -20,8 +21,7 @@ use App\Models\BookingStatus;
  * @method BookingStatus find($id, $columns = ['*'])
  * @method BookingStatus first($columns = ['*'])
  */
-class BookingStatusRepository 
-// extends BaseRepository
+class BookingStatusRepository extends BaseRepository
 {
     /**
      * @var array

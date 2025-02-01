@@ -42,12 +42,13 @@ class AddressCast implements CastsAttributes
 //            throw new InvalidArgumentException('The given value is not an Address instance.');
 //        }
 
-        return ['address' => json_encode([
-            'id' => $value['id'],
-            'description' => $value['description'],
-            'address' => $value['address'],
-            'latitude' => $value['latitude'],
-            'longitude' => $value['longitude'],
-        ])];
+        // return ['address' => json_encode([
+        //     'id' => $value['id'],
+        //     'description' => $value['description'],
+        //     'address' => $value['address'],
+        //     'latitude' => $value['latitude'],
+        //     'longitude' => $value['longitude'],
+        // ])];
+        return [];
     }
 }

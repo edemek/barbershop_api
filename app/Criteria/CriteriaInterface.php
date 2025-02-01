@@ -9,6 +9,7 @@
 namespace App\Criteria;
 
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Prettus\Repository\Contracts\RepositoryInterface;
 
@@ -17,8 +18,8 @@ interface CriteriaInterface
     /**
      * Apply criteria in query repository.
      *
-     * @param Builder $query
+     * @param Builder|Model $query
      * @return Builder
      */
-    public function apply(Builder $query , RepositoryInterface $repository): Builder;
+    public function apply(Builder|Model $query , RepositoryInterface $repository): Builder|Model;
 }

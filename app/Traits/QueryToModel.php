@@ -15,17 +15,17 @@ use Illuminate\Support\Facades\App;
 
 trait QueryToModel
 {
-    /**
-     * Applique des filtres à la requête en utilisant des closures.
-     *
-     * @param callable $callback La fonction de filtrage à appliquer.
-     * @return void
-     */
-    public function pushCriteria($criteria)
-    {
-        $this->query = $criteria->apply($this->query, $this);
+    // /**
+    //  * Applique des filtres à la requête en utilisant des closures.
+    //  *
+    //  * @param  $criteria
+    //  * @return void
+    //  */
+    // public function pushCriteria($criteria)
+    // {
+    //     $this->model = $criteria->apply($this->model, $this);
         
-    }
+    // }
 
     /**
      * Applique des filtres à la requête en utilisant des closures.
@@ -36,7 +36,7 @@ trait QueryToModel
     public function queryCriteria(callable $callback): void
     {
         // Exécute la closure pour appliquer le filtrage
-        $this->query = $callback($this->query);
+        $this->model = $callback($this->model);
     }
 
      /**
@@ -44,10 +44,10 @@ trait QueryToModel
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function get($columns = []): \Illuminate\Database\Eloquent\Collection
+    public function get_($columns = []): \Illuminate\Database\Eloquent\Collection
     {
         try {
-            return $this->query->get(); // Retourne les réservations filtrées
+            return $this->model->get(); // Retourne les réservations filtrées
         } catch (\Exception $e) {
             // Gère toutes les autres exceptions
             throw new \Exception('Une erreur est survenue : ' . $e->getMessage());
@@ -64,7 +64,7 @@ trait QueryToModel
     public function findWithoutFail($id, $columns = ['*'])
     {
         // Utilise la méthode find() pour récupérer l'enregistrement
-        return $this->query->find($id, $columns);
+        return $this->model->find($id, $columns);
     }
 
     /**
@@ -74,10 +74,10 @@ trait QueryToModel
      * @param array $values Un tableau des valeurs à rechercher.
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function findWhereIn($column, array $values , $columns = [])
+    public function findWhereIn_($column, array $values , $columns = [])
     {
         // Utilise la méthode whereIn d'Eloquent pour récupérer les enregistrements
-        return $this->query->whereIn($column, $values)->get();
+        return $this->model->whereIn($column, $values)->get();
     }
 
     /**
@@ -86,9 +86,9 @@ trait QueryToModel
      * @param int $id
      * @return bool
      */
-    public function delete($id): bool
+    public function delete_($id): bool
     {
-        $finded = $this->query->find($id);
+        $finded = $this->model->find($id);
         return $finded ? $finded->delete() : false;
     }
 
@@ -99,10 +99,10 @@ trait QueryToModel
      * @param array $data Les données à insérer dans la table.
      * @return \App\Models\Booking Le modèle créé avec tous les attributs.
      */
-    public function create(array $data)
+    public function create_(array $data)
     {
         // Utilise la méthode create d'Eloquent pour insérer les données
-        return $this->query->create($data);
+        return $this->model->create($data);
     }
 
 
@@ -114,10 +114,10 @@ trait QueryToModel
      * @return \App\Models\Booking Le modèle mis à jour.
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException Si la réservation n'est pas trouvée.
      */
-    public function update(array $data, $id)
+    public function update_(array $data, $id)
     {
         // Trouver la réservation par ID
-        $booking = $this->query->findOrFail($id); // Cela lèvera une exception si non trouvé
+        $booking = $this->model->findOrFail($id); // Cela lèvera une exception si non trouvé
 
         // Mettre à jour les informations de la réservation
         $booking->update($data);

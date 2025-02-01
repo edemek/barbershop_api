@@ -3,5 +3,5 @@
 
 return [
 
-    'enable_email_notifications'    => true,
+    'enable_email_notifications' => true,
 ];

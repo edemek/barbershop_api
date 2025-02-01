@@ -8,9 +8,11 @@
 
 namespace App\Criteria\Salons;
 
-use App\Criteria\CriteriaInterface;
+// use App\Criteria\CriteriaInterface;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Prettus\Repository\Contracts\CriteriaInterface;
 use Prettus\Repository\Contracts\RepositoryInterface;
 
 /**
@@ -37,11 +39,13 @@ class NearCriteria  implements CriteriaInterface
     /**
      * Apply criteria in query repository
      *
-      * @param Builder $query
-     * @return Builder
+      * @param Builder|Model $query
+     * @return Builder|Model
      */
-    public function apply($query ,  RepositoryInterface $repository  ): Builder
+    public function apply($query ,  RepositoryInterface $repository  ): Builder|Model
     {
+        return $query;
+
         if ($this->request->has(['myLat', 'myLon', 'areaLat', 'areaLon'])) {
             $coordination = $this->request->only('myLat', 'myLon', 'areaLat', 'areaLon');
             $coordination = array_values($coordination);
