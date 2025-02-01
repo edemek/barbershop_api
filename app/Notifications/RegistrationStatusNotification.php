@@ -6,6 +6,11 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+<<<<<<< Updated upstream
+=======
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
+>>>>>>> Stashed changes
 
 class RegistrationStatusNotification extends Notification
 {
@@ -62,8 +67,11 @@ class RegistrationStatusNotification extends Notification
         ];
     }
 
+<<<<<<< Updated upstream
     // public function notifications()
     // {
     //     return auth()->user()->notifications; // Récupère toutes les notifications pour l'utilisateur authentifié
     // }
+=======
+>>>>>>> Stashed changes
 }
