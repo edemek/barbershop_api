@@ -6,26 +6,18 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-<<<<<<< Updated upstream
-=======
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
->>>>>>> Stashed changes
+
 
 class RegistrationStatusNotification extends Notification
 {
     use Queueable;
 
-    protected $status;
-    protected $reason;
-
     /**
      * Create a new notification instance.
      */
-    public function __construct($status, $reason = null)
+    public function __construct()
     {
-        $this->status = $status;
-        $this->reason = $reason;
+        //
     }
 
     /**
@@ -35,43 +27,23 @@ class RegistrationStatusNotification extends Notification
      */
     public function via($notifiable)
     {
-        return ['mail', 'database'];
+        return ['mail']; // On utilise l'e-mail pour cette notification
     }
 
-    /**
-     * Get the mail representation of the notification.
-     */
     public function toMail($notifiable)
     {
-        $message = (new MailMessage())
-            ->subject('Statut de votre inscription')
-            ->line('Votre inscription a été ' . $this->status . '.');
-
-        if ($this->status === 'rejetée' && $this->reason) {
-            $message->line('Raison du rejet : ' . $this->reason);
-        }
-
-        return $message;
+        return (new MailMessage)
+            ->subject('Confirmation en cours de votre inscription')
+            ->greeting('Bonjour ' . $notifiable->name . ',')
+            ->line('Merci pour votre inscription. Votre demande est en cours de traitement et nécessite la confirmation d\'un administrateur.')
+            ->line('Vous recevrez un retour dans les 24 heures.')
+            ->line('Merci de votre patience.');
     }
 
-    /**
-     * Get the array representation of the notification.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray($notifiable)
     {
         return [
-            'status' => $this->status,
-            'reason' => $this->reason,
+            // Si tu veux stocker des infos dans la base pour d'autres canaux
         ];
     }
-
-<<<<<<< Updated upstream
-    // public function notifications()
-    // {
-    //     return auth()->user()->notifications; // Récupère toutes les notifications pour l'utilisateur authentifié
-    // }
-=======
->>>>>>> Stashed changes
 }
