@@ -11,13 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('barbershops', function (Blueprint $table) {
+        Schema::create('o_t_p_s', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('title');
-            $table->integer('available_seats');
-            $table->string('description')->nullable();
-            $table->boolean('completed')->default(false);
+            $table->string('phone_number')->unique();
+            $table->string('otp');
+            $table->timestamp('expires_at');
             $table->timestamps();
         });
     }
@@ -27,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('barbershops');
+        Schema::dropIfExists('o_t_p_s');
     }
 };
