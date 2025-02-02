@@ -16,6 +16,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Exception;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
@@ -75,25 +76,31 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-        // Validation de la requête
-        $validated = $request->validate([
-            'phone' => ['required', 'regex:/^\+228\d{8}$/'], 
-            'password' => 'required|string|min:8',
-        ]);
-
-        // Recherche de l'utilisateur par téléphone
-        $user = User::where('phone', $validated['phone'])->first();
-
-        // Vérification du mot de passe
-        if (!$user || !Hash::check($validated['password'], $user->password)) {
-            throw ValidationException::withMessages([
-                'phone' => ['Les identifiants fournis sont incorrects.'],
+        try {
+            // Validation de la requête
+            $validated = $request->validate([
+                'phone' => ['required', 'regex:/^\+228\d{8}$/'], 
+                'password' => 'required|string|min:8',
             ]);
+
+            // Recherche de l'utilisateur par téléphone
+            $user = User::where('phone', $validated['phone'])->first();
+
+            // Vérification du mot de passe
+            if (!$user || !Hash::check($validated['password'], $user->password)) {
+                throw ValidationException::withMessages([
+                    'phone' => ['Les identifiants fournis sont incorrects.'],
+                ]);
+            }
+
+            // Génération d'un token d'authentification
+            $token = $user->createToken('auth_token')->plainTextToken;
+        } catch (ValidationException $e) {
+            // Return a custom JSON error response for validation errors
+            return $this->sendError($e->validator->errors(),422); // HTTP status code 422 Unprocessable Entity
+        } catch (Exception $e) {
+            return $this->sendError($e->getMessage());
         }
-
-        // Génération d'un token d'authentification
-        $token = $user->createToken('auth_token')->plainTextToken;
-
         return response(['user' => $user, 'token' => $token], 201);
     }
 
