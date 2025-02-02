@@ -79,7 +79,7 @@ class AuthController extends Controller
         try {
             // Validation de la requête
             $validated = $request->validate([
-                'phone' => ['required', 'regex:/^\+228\d{8}$/'], 
+                'phone' => ['required', 'string'], 
                 'password' => 'required|string|min:8',
             ]);
 
