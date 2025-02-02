@@ -1,10 +1,4 @@
 <?php
-/*
- * File name: UserAPIController.php
- * Last modified: 2024.04.10 at 14:47:28
- * Author: SmarterVision - https://codecanyon.net/user/smartervision
- * Copyright (c) 2024
- */
 
 namespace App\Http\Controllers\API;
 
@@ -20,6 +14,7 @@ use App\Repositories\UserRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
@@ -27,14 +22,14 @@ use Illuminate\Validation\ValidationException;
 use InfyOm\Generator\Criteria\LimitOffsetCriteria;
 use Prettus\Repository\Criteria\RequestCriteria;
 
-class UserAPIController extends Controller
+class UserSalonAPIController extends Controller
 {
     /**
      * @var UserRepository
      */
-    private UserRepository $userRepository;
+    // private UserRepository $userRepository;
 
-    private UploadRepository $uploadRepository;
+    // private UploadRepository $uploadRepository;
     // private RoleRepository $roleRepository;
     // private CustomFieldRepository $customFieldRepository;
 
@@ -43,49 +38,59 @@ class UserAPIController extends Controller
      *
      * @return void
      */
-    public function __construct(UserRepository $userRepository, UploadRepository $uploadRepository)
+    public function __construct()
     {
-        parent::__construct();
-        $this->userRepository = $userRepository;
-        $this->uploadRepository = $uploadRepository;
+        // parent::__construct();
+        // $this->userRepository = $userRepository;
+        // $this->uploadRepository = $uploadRepository;
         // $this->roleRepository = $roleRepository;
         // $this->customFieldRepository = $customFieldRepo;
     }
 
-    // function login(Request $request): JsonResponse
-    // {
-    //     try {
-    //         $this->validate($request, [
-    //             'email' => 'required|email',
-    //             'password' => 'required',
-    //         ]);
-    //         if (auth()->attempt(['email' => $request->input('email'), 'password' => $request->input('password')])) {
-    //             // Authentication passed...
-    //             $user = auth()->user();
-    //             $user->device_token = $request->input('device_token', '');
-    //             $user->save();
-    //             return $this->sendResponse($user->load('roles'), 'User retrieved successfully');
-    //         } else {
-    //             return $this->sendError(__('auth.failed'));
-    //         }
-    //     } catch (ValidationException $e) {
-    //         return $this->sendError(array_values($e->errors()));
-    //     } catch (Exception $e) {
-    //         return $this->sendError($e->getMessage());
-    //     }
-
-    // }
-
-    function user(Request $request): JsonResponse
+    public function login(Request $request)
     {
-        $user = $this->userRepository->findByField('api_token', $request->input('api_token'))->first();
+        // Validation des entrées
+        $this->validate($request, [
+            'identifier' => 'required', // peut être un email ou un numéro de téléphone
+            'password' => 'required',
+            'remember_me' => 'sometimes|boolean' // option "Rester connecté"
+        ]);
+
+        // Recherche de l'utilisateur par email ou téléphone
+        $user = User::where('email', $request->input('identifier'))
+                    ->orWhere('phone_number', $request->input('identifier'))
+                    ->first();
 
         if (!$user) {
-            return $this->sendError('User not found');
+            return response()->json(['error' => 'Ce compte n\'existe pas.'], 404);
         }
 
-        return $this->sendResponse($user->load('roles'), 'User retrieved successfully');
+        // Vérifier si le mot de passe est correct
+        if (Hash::check($request->input('password'), $user->password)) {
+            // Authentification réussie, générer un token ou utiliser l'authentification Laravel
+            Auth::login($user);  // Utilisation de la méthode `login` de Laravel Auth
+            $user->device_token = $request->input('device_token', '');
+            $user->save();
+
+            return response()->json([
+                'message' => 'Connexion réussie.',
+                'user' => $user
+            ]);
+        } else {
+            return response()->json(['error' => 'Mot de passe incorrect.'], 401);
+        }
     }
+
+    // function user(Request $request): JsonResponse
+    // {
+    //     $user = $this->userRepository->findByField('api_token', $request->input('api_token'))->first();
+
+    //     if (!$user) {
+    //         return $this->sendError('User not found');
+    //     }
+
+    //     return $this->sendResponse($user->load('roles'), 'User retrieved successfully');
+    // }
 
     /**
      * Create a new user instance after a valid registration.
@@ -97,6 +102,17 @@ class UserAPIController extends Controller
     {
         try {
             $this->validate($request, User::$rules);
+
+            // Vérifier si l'email ou le numéro de téléphone existent déjà
+            if (User::where('email', $request->input('email'))->exists()) {
+                return response()->json(['error' => 'Cette adresse e-mail est déjà utilisée.'], 422);
+            }
+
+            if (User::where('phone_number', $request->input('phone_number'))->exists()) {
+                return response()->json(['error' => 'Ce numéro de téléphone est déjà utilisé.'], 422);
+            }
+
+            // Création de l'utilisateur
             $user = new User;
             $user->name = $request->input('name');
             $user->email = $request->input('email');
@@ -107,25 +123,21 @@ class UserAPIController extends Controller
             $user->api_token = Str::random(60);
             $user->save();
 
-            // $defaultRoles = $this->roleRepository->findByField('default', '1');
-            // $defaultRoles = $defaultRoles->pluck('name')->toArray();
-            // $user->assignRole($defaultRoles);
         } catch (ValidationException $e) {
             return $this->sendError(array_values($e->errors()));
         } catch (Exception $e) {
             return $this->sendError($e->getMessage());
         }
 
-        // Envoi de la notification de confirmation en cours
+        // Envoi de la notification de confirmation
         $user->notify(new RegistrationStatusNotification());
 
         return response()->json([
             'message' => 'Votre inscription est en cours de validation. Vous recevrez un e-mail dans les 24 heures.',
             'user' => $user
         ]);
-
-        return $this->sendResponse($user->load('roles'), 'User retrieved successfully');
     }
+
 
     // function logout(Request $request): JsonResponse
     // {

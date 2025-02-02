@@ -37,10 +37,9 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',      // Nom de l'utilisateur
-        'phone',     // Email de l'utilisateur
-        'password',  // Mot de passe de l'utilisateur
+        'name', 'email', 'phone_number', 'phone_verified_at', 'device_token', 'password', 'api_token'
     ];
+
 
     /**
      * Les attributs qui doivent être cachés lors de la sérialisation (par exemple, lors de l'envoi de la réponse JSON).

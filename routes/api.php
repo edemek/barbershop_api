@@ -16,14 +16,17 @@ use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\OtpController;
 use App\Http\Controllers\Api\BookingAPIController;
 use App\Http\Controllers\API\SalonAPIController;
-use App\Http\Controllers\API\AuthAPIController;
+use App\Http\Controllers\SalonController;
+use App\Http\Controllers\API\UserSalonAPIController;
 
 //------------------- user -------------------
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::post('/register', [AuthAPIController::class, 'register']);
+// Route::post('/register', [AuthController::class, 'register']);
+Route::post('/register', [UserSalonAPIController::class, 'register']);
+Route::get('/login', [UserSalonAPIController::class, 'login']);
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum', 'admin')->get('/users', [AuthController::class, 'index']);
