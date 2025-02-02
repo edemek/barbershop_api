@@ -47,22 +47,30 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
-        // Validation de la requête pour vérifier les champs nécessaires
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'phone' => ['required', 'regex:/^\+228\d{8}$/'], // Validation de téléphone
-            'password' => 'required|string|min:8|confirmed',
-        ]);
+        try {
+            // Validation de la requête pour vérifier les champs nécessaires
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'phone' => ['required', 'regex:/^\+228\d{8}$/'], // Validation de téléphone
+                'password' => 'required|string|min:8|confirmed',
+            ]);
 
-        // Création de l'utilisateur dans la base de données
-        $user = User::create([
-            'name' => $validated['name'],
-            'phone' => $validated['phone'],
-            'password' => Hash::make($validated['password']),
-        ]);
+            // Création de l'utilisateur dans la base de données
+            $user = User::create([
+                'name' => $validated['name'],
+                'phone' => $validated['phone'],
+                'password' => Hash::make($validated['password']),
+            ]);
 
-        // Génération d'un token d'authentification pour l'utilisateur créé
-        $token = $user->createToken('auth_token')->plainTextToken;
+            // Génération d'un token d'authentification pour l'utilisateur créé
+            $token = $user->createToken('auth_token')->plainTextToken;
+            
+        } catch (ValidationException $e) {
+            // Return a custom JSON error response for validation errors
+            return $this->sendError($e->validator->errors(),422); // HTTP status code 422 Unprocessable Entity
+        } catch (Exception $e) {
+            return $this->sendError($e->getMessage());
+        }
 
         // Retourne l'utilisateur et son token
         return response(['user' => $user, 'token' => $token], 201);
