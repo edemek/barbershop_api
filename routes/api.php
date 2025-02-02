@@ -15,7 +15,7 @@ use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\OtpController;
 use App\Http\Controllers\Api\BookingAPIController;
-use App\Http\Controllers\API\SalonAPIController;
+use App\Http\Controllers\Api\SalonAPIController;
 use App\Http\Controllers\SalonController;
 
 //------------------- user -------------------
