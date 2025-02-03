@@ -9,7 +9,9 @@
 namespace App\Repositories;
 
 use App\Models\User;
-use InfyOm\Generator\Common\BaseRepository;
+use App\Repositories\BaseRepository;
+
+
 
 /**
  * Class UserRepository

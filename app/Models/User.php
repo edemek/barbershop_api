@@ -26,6 +26,9 @@ class User extends Authenticatable
         'name',      // Nom de l'utilisateur
         'phone',     // Email de l'utilisateur
         'password',  // Mot de passe de l'utilisateur
+        'phone_verified_at',
+        'api_token',
+        'device_token',
     ];
 
     /**
@@ -52,6 +55,18 @@ class User extends Authenticatable
             'password' => 'hashed',             // Indication que le mot de passe est haché (ne pas le récupérer en clair)
         ];
     }
+
+     /**
+     * Validation rules
+     *
+     * @var array
+     */
+    public static array $rules = [
+        'name' => 'required|string|max:255',
+        'email' => 'nullable|string|max:255|unique:users',
+        'phone' => 'required|max:255|unique:users',
+        'password' => 'required|string|min:8|confirmed',
+    ];
 
     /**
      * Relation "un utilisateur a plusieurs salons de coiffure" (HasMany).
