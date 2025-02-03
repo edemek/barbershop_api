@@ -16,6 +16,20 @@ class User extends Authenticatable
     // - HasApiTokens permet de générer des tokens d'authentification pour l'API (par exemple avec Sanctum).
     use HasFactory, Notifiable, HasApiTokens;
 
+
+    /**
+     * Validation rules
+     *
+     * @var array
+     */
+    // public static array $rules = [
+    //     'name' => 'required|string|max:255',
+    //     'email' => 'required|string|max:255|unique:users',
+    //     'phone_number' => 'required|max:255|unique:users',
+    //     'password' => 'required',
+    // ];
+
+    public $table = 'users';
     /**
      * Les attributs qui peuvent être massivement assignés.
      * Ces champs peuvent être définis lors de la création ou de la mise à jour d'un utilisateur via un tableau.
@@ -30,6 +44,7 @@ class User extends Authenticatable
         'api_token',
         'device_token',
     ];
+
 
     /**
      * Les attributs qui doivent être cachés lors de la sérialisation (par exemple, lors de l'envoi de la réponse JSON).

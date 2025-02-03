@@ -9,12 +9,15 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Exception;
+use App\Notifications\RegistrationStatusNotification;
+use Illuminate\Support\Facades\Log;
+
+
 
 
 class AuthController extends Controller
 {
-    // ...
-
+   
     /**
      * Méthode pour obtenir la liste de tous les utilisateurs.
      *
@@ -40,6 +43,13 @@ class AuthController extends Controller
         try {
             // Validation de la requête pour vérifier les champs nécessaires
             $validated = $request->validate(User::$rules);
+            // // Validation de la requête pour vérifier les champs nécessaires
+            // $validated = $request->validate([
+            //     'name' => 'required|string|max:255',
+            //     'phone' => ['nullable', 'regex:/^\+228\d{8}$/', 'unique:users,phone'],
+            //     'email' => ['nullable', 'email', 'unique:users,email'],
+            //     'password' => 'required|string|min:8|confirmed',
+            // ]);
 
             // Création de l'utilisateur dans la base de données
             $user = User::create([
@@ -53,6 +63,19 @@ class AuthController extends Controller
                 'password' => Hash::make($validated['password']),
                 'api_token' => Str::random(60),
             ]);
+       
+        // Vérifiez si le numéro de téléphone ou l'email est fourni
+        if (empty($validated['phone']) && empty($validated['email'])) {
+            return response()->json(['error' => 'Le numéro de téléphone ou l\'adresse email est requis.'], 422);
+        }
+
+        // Création de l'utilisateur dans la base de données
+        $user = User::create([
+            'name' => $validated['name'],
+            'phone' => $validated['phone'] ?? null, // Utiliser le téléphone s'il est fourni
+            'email' => $validated['email'] ?? null, // Utiliser l'email s'il est fourni
+            'password' => Hash::make($validated['password']),
+        ]);
 
             // Génération d'un token d'authentification pour l'utilisateur créé
             // $token = $user->createToken('auth_token')->plainTextToken;
@@ -64,12 +87,22 @@ class AuthController extends Controller
             return $this->sendError($e->getMessage());
         }
 
+        // Envoi d'une notification de validation ou rejet (vous pouvez ajuster cela selon votre logique)
+        // Exemple : Notification pour dire que l'inscription a été reçue
+        try {
+            $user->notify(new RegistrationStatusNotification('Votre inscription a été reçue avec succès, veillez patienter pour la verification par un administrateur.'));
+        } catch (\Exception $e) {
+            // Gérer l'erreur (journaliser ou retourner une réponse appropriée)
+            Log::error('Erreur lors de l\'envoi de la notification : ' . $e->getMessage());
+        }
+
         // Retourne l'utilisateur et son token
         // return response(['user' => $user, 'token' => $token], 201);
         return response(['user' => $user], 201);
         return $this->sendResponse($user,  __('lang.saved_successfully', ['operator' => __('lang.address')]));
         
     }
+
 
     /**
      * Méthode pour connecter un utilisateur existant.
@@ -84,6 +117,7 @@ class AuthController extends Controller
             $validated = $request->validate([
                 'phone' => ['required', 'string'], 
                 'password' => 'required|string|min:8',
+            
             ]);
 
             // Recherche de l'utilisateur par téléphone
@@ -94,10 +128,20 @@ class AuthController extends Controller
                 throw ValidationException::withMessages([
                     'phone' => ['Les identifiants fournis sont incorrects.'],
                 ]);
-            }
 
-            // Génération d'un token d'authentification
-            $token = $user->createToken('auth_token')->plainTextToken;
+                // Recherche de l'utilisateur par téléphone
+                $user = User::where('phone', $validated['phone'])->first();
+
+                // Vérification du mot de passe
+                if (!$user || !Hash::check($validated['password'], $user->password)) {
+                    throw ValidationException::withMessages([
+                        'phone' => ['Les identifiants fournis sont incorrects.'],
+                    ]);
+                }
+            }
+                // Génération d'un token d'authentification
+                $token = $user->createToken('auth_token')->plainTextToken;
+           
         } catch (ValidationException $e) {
             // Return a custom JSON error response for validation errors
             return $this->sendError($e->validator->errors(),422); // HTTP status code 422 Unprocessable Entity
