@@ -29,7 +29,9 @@ Route::post('/inscription', [AuthController::class, 'register']);
 Route::post('/salon-owner/register', [UserSalonAPIController::class, 'register']);
 Route::get('/login', [UserSalonAPIController::class, 'login']);
 
-Route::post('/login', [AuthController::class, 'login']);
+Route::get('/login', [AuthController::class, 'login']);
+
+Route::middleware('auth:sanctum')->post('/affiliate/link/generate', [AffiliateController::class, 'generateLink']);
 Route::middleware('auth:sanctum', 'admin')->get('/users', [AuthController::class, 'index']);
 
 
@@ -144,5 +146,5 @@ Route::resource('availability_hours', AvailabilityHourAPIController::class)->onl
 
 
 //------------------- Lien d'affiliation -------------------
-Route::post('/affiliate/link/generate', [AffiliateController::class, 'generateLink']);
+//Route::post('/affiliate/link/generate', [AffiliateController::class, 'generateLink']);
 Route::post('/affiliate/link/use', [AffiliateController::class, 'useLink']);
