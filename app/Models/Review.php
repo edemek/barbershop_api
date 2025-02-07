@@ -23,6 +23,6 @@ class Review extends Model
 
     public function salon()
     {
-        return $this->belongsTo(Salon::class);
+        return $this->belongsTo(Salon::class); 
     }
 }

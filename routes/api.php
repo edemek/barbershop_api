@@ -15,7 +15,7 @@ use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\OtpController;
 use App\Http\Controllers\Api\BookingAPIController;
-use App\Http\Controllers\API\SalonAPIController;
+use App\Http\Controllers\Api\SalonAPIController;
 use App\Http\Controllers\SalonController;
 use App\Http\Controllers\API\UserSalonAPIController;
 use App\Http\Controllers\API\AffiliateController;
@@ -25,8 +25,15 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+<<<<<<< HEAD
 Route::post('/inscription', [AuthController::class, 'register']);
 Route::post('/salon-owner/register', [UserSalonAPIController::class, 'register']);
+=======
+//------------------- inscription client -------------------
+Route::post('/register', [AuthController::class, 'register']);
+// Route::post('/register', [AuthController::class, 'register']);
+// Route::post('/register', [UserSalonAPIController::class, 'register']);
+>>>>>>> origin/weekend-1
 Route::get('/login', [UserSalonAPIController::class, 'login']);
 
 Route::get('/login', [AuthController::class, 'login']);

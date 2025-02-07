@@ -8,20 +8,21 @@
 
 namespace App\Models;
 
-use Eloquent as Model;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
-use Spatie\Image\Exceptions\InvalidManipulation;
-use Spatie\Image\Manipulations;
-use Spatie\MediaLibrary\HasMedia;
-use Spatie\MediaLibrary\InteractsWithMedia;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
+// use Spatie\Image\Exceptions\InvalidManipulation;
+// use Spatie\Image\Manipulations;
+// use Spatie\MediaLibrary\HasMedia;
+// use Spatie\MediaLibrary\InteractsWithMedia;
+// use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class Upload extends Model implements HasMedia
+class Upload extends Model 
+// implements HasMedia
 {
-    use InteractsWithMedia {
-        getMedia as protected getMediaTrait;
-        getFirstMediaUrl as protected getFirstMediaUrlTrait;
-    }
+    // use InteractsWithMedia {
+    //     getMedia as protected getMediaTrait;
+    //     getFirstMediaUrl as protected getFirstMediaUrlTrait;
+    // }
 
     public $fillable = [
         'uuid'
@@ -33,16 +34,16 @@ class Upload extends Model implements HasMedia
      * @param Media|null $media
      * @throws InvalidManipulation
      */
-    public function registerMediaConversions(Media $media = null): void
-    {
-        $this->addMediaConversion('thumb')
-            ->fit(Manipulations::FIT_CROP, 200, 200)
-            ->sharpen(10);
+    // public function registerMediaConversions(Media $media = null): void
+    // {
+    //     $this->addMediaConversion('thumb')
+    //         ->fit(Manipulations::FIT_CROP, 200, 200)
+    //         ->sharpen(10);
 
-        $this->addMediaConversion('icon')
-            ->fit(Manipulations::FIT_CROP, 100, 100)
-            ->sharpen(10);
-    }
+    //     $this->addMediaConversion('icon')
+    //         ->fit(Manipulations::FIT_CROP, 100, 100)
+    //         ->sharpen(10);
+    // }
 
     // TODO
     public function getFirstMediaUrl($collectionName = 'default', $conversion = ''): string

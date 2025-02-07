@@ -22,12 +22,12 @@ class User extends Authenticatable
      *
      * @var array
      */
-    public static array $rules = [
-        'name' => 'required|string|max:255',
-        'email' => 'required|string|max:255|unique:users',
-        'phone_number' => 'required|max:255|unique:users',
-        'password' => 'required',
-    ];
+    // public static array $rules = [
+    //     'name' => 'required|string|max:255',
+    //     'email' => 'required|string|max:255|unique:users',
+    //     'phone_number' => 'required|max:255|unique:users',
+    //     'password' => 'required',
+    // ];
 
     public $table = 'users';
     /**
@@ -37,7 +37,16 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
+<<<<<<< HEAD
         'name', 'email', 'phone_number', 'phone_verified_at', 'device_token', 'password', 'api_token','affiliate_link', 'points', 'total_points'
+=======
+        'name',      // Nom de l'utilisateur
+        'phone',     // Email de l'utilisateur
+        'password',  // Mot de passe de l'utilisateur
+        'phone_verified_at',
+        'api_token',
+        'device_token',
+>>>>>>> origin/weekend-1
     ];
 
 
@@ -68,6 +77,18 @@ class User extends Authenticatable
             'points' => 'integer',
         ];
     }
+
+     /**
+     * Validation rules
+     *
+     * @var array
+     */
+    public static array $rules = [
+        'name' => 'required|string|max:255',
+        'email' => 'nullable|string|max:255|unique:users',
+        'phone' => 'required|max:255|unique:users',
+        'password' => 'required|string|min:8|confirmed',
+    ];
 
     /**
      * Relation "un utilisateur a plusieurs salons de coiffure" (HasMany).
