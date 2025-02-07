@@ -4,7 +4,7 @@ use App\Http\Controllers\API\AvailabilityHourAPIController;
 use App\Http\Controllers\API\EServiceAPIController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\Barbershop\BarbershopController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ShoppingCartController;
@@ -18,14 +18,15 @@ use App\Http\Controllers\Api\BookingAPIController;
 use App\Http\Controllers\API\SalonAPIController;
 use App\Http\Controllers\SalonController;
 use App\Http\Controllers\API\UserSalonAPIController;
+use App\Http\Controllers\API\AffiliateController;
 
 //------------------- user -------------------
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-// Route::post('/register', [AuthController::class, 'register']);
-Route::post('/register', [UserSalonAPIController::class, 'register']);
+Route::post('/inscription', [AuthController::class, 'register']);
+Route::post('/salon-owner/register', [UserSalonAPIController::class, 'register']);
 Route::get('/login', [UserSalonAPIController::class, 'login']);
 
 Route::post('/login', [AuthController::class, 'login']);
@@ -142,4 +143,6 @@ Route::resource('availability_hours', AvailabilityHourAPIController::class)->onl
 
 
 
-
+//------------------- Lien d'affiliation -------------------
+Route::post('/affiliate/link/generate', [AffiliateController::class, 'generateLink']);
+Route::post('/affiliate/link/use', [AffiliateController::class, 'useLink']);

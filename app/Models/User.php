@@ -37,7 +37,7 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name', 'email', 'phone_number', 'phone_verified_at', 'device_token', 'password', 'api_token'
+        'name', 'email', 'phone_number', 'phone_verified_at', 'device_token', 'password', 'api_token','affiliate_link', 'points', 'total_points'
     ];
 
 
@@ -61,8 +61,11 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'phone_verified_at' => 'datetime',  // Conversion de 'email_verified_at' en objet DateTime
-            'password' => 'hashed',             // Indication que le mot de passe est haché (ne pas le récupérer en clair)
+            'email_verified_at' => 'datetime',
+            'phone_verified_at' => 'datetime',
+            'password' => 'hashed',
+            'total_points' => 'integer',
+            'points' => 'integer',
         ];
     }
 
@@ -76,5 +79,26 @@ class User extends Authenticatable
     {
         // Retourne la relation HasMany pour récupérer tous les salons de coiffure associés à cet utilisateur
         return $this->hasMany(Barbershop::class);
+    }
+
+    public function affiliateLinks()
+    {
+        return $this->hasMany(AffiliateLink::class);
+    }
+
+    public function commissions()
+    {
+        return $this->hasMany(Commission::class);
+    }
+
+    public function addPoints($points)
+    {
+        $this->increment('points', $points);
+        $this->increment('total_points', $points); // Ajouter aux total_points
+    }
+
+    public function addCommission($commission)
+    {
+        $this->increment('total_points', $commission); // Ajouter aux total_points
     }
 }

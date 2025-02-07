@@ -32,11 +32,10 @@ class RegistrationStatusNotification extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->subject('Confirmation en cours de votre inscription')
+            ->subject('Confirmation de votre inscription')
             ->greeting('Bonjour ' . $notifiable->name . ',')
-            ->line('Merci pour votre inscription. Votre demande est en cours de traitement et nécessite la confirmation d\'un administrateur.')
-            ->line('Vous recevrez un retour dans les 24 heures.')
-            ->line('Merci de votre patience.');
+            ->line('Votre inscription a reussi.')
+            ->line('Merci pour votre inscription.');
     }
 
     public function toArray($notifiable)
