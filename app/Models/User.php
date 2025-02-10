@@ -37,16 +37,7 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-<<<<<<< HEAD
         'name', 'email', 'phone_number', 'phone_verified_at', 'device_token', 'password', 'api_token','affiliate_link', 'points', 'total_points'
-=======
-        'name',      // Nom de l'utilisateur
-        'phone',     // Email de l'utilisateur
-        'password',  // Mot de passe de l'utilisateur
-        'phone_verified_at',
-        'api_token',
-        'device_token',
->>>>>>> origin/weekend-1
     ];
 
 

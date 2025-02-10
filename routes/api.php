@@ -25,20 +25,16 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-<<<<<<< HEAD
 Route::post('/inscription', [AuthController::class, 'register']);
 Route::post('/salon-owner/register', [UserSalonAPIController::class, 'register']);
-=======
 //------------------- inscription client -------------------
 Route::post('/register', [AuthController::class, 'register']);
 // Route::post('/register', [AuthController::class, 'register']);
 // Route::post('/register', [UserSalonAPIController::class, 'register']);
->>>>>>> origin/weekend-1
 Route::get('/login', [UserSalonAPIController::class, 'login']);
 
 Route::get('/login', [AuthController::class, 'login']);
 
-Route::middleware('auth:sanctum')->post('/affiliate/link/generate', [AffiliateController::class, 'generateLink']);
 Route::middleware('auth:sanctum', 'admin')->get('/users', [AuthController::class, 'index']);
 
 
@@ -153,5 +149,5 @@ Route::resource('availability_hours', AvailabilityHourAPIController::class)->onl
 
 
 //------------------- Lien d'affiliation -------------------
-//Route::post('/affiliate/link/generate', [AffiliateController::class, 'generateLink']);
 Route::post('/affiliate/link/use', [AffiliateController::class, 'useLink']);
+Route::middleware('auth:sanctum')->post('/affiliate/link/generate', [AffiliateController::class, 'generateLink']);
